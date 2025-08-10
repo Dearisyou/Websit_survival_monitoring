@@ -1,0 +1,8 @@
+2025-08-10 13:11:29,457 - User anonymous: LOGIN_FAILED - Username: admin
+2025-08-10 13:16:02,615 - User anonymous: LOGIN_FAILED - Username: admin
+2025-08-10 13:16:07,752 - User anonymous: LOGIN_FAILED - Username: admin
+2025-08-10 13:16:15,266 - User 1: LOGIN_SUCCESS - User: admin
+2025-08-10 16:40:18,799 - User anonymous: LOGIN_FAILED - Username: admin
+2025-08-10 16:40:23,676 - User 1: LOGIN_SUCCESS - User: admin
+2025-08-10 19:39:32,983 - User anonymous: LOGIN_FAILED - Username: admin
+2025-08-10 19:39:49,451 - User 1: LOGIN_SUCCESS - User: admin

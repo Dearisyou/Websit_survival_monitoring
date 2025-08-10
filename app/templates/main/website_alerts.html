@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">告警日志 - {{ website.name }}</h1>
+    <a href="{{ url_for('main.websites') }}" class="btn btn-secondary">返回</a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h6 class="mb-0">最近100条告警记录</h6>
+    </div>
+    <div class="card-body">
+        {% if alerts %}
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>发送时间</th>
+                        <th>类型</th>
+                        <th>状态</th>
+                        <th>消息内容</th>
+                        <th>错误信息</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alert in alerts %}
+                    <tr>
+                        <td>{{ alert.sent_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>
+                            {% if alert.alert_type == 'down' %}
+                                <span class="badge bg-danger">故障告警</span>
+                            {% else %}
+                                <span class="badge bg-success">恢复通知</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if alert.status == 'success' %}
+                                <span class="badge bg-success">成功</span>
+                            {% else %}
+                                <span class="badge bg-danger">失败</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="text-truncate" style="max-width: 300px;" title="{{ alert.message }}">
+                                {{ alert.message }}
+                            </div>
+                        </td>
+                        <td>
+                            {% if alert.error_message %}
+                                <span class="text-danger small">{{ alert.error_message }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="bi bi-bell-slash" style="font-size: 3rem; color: #6c757d;"></i>
+            <p class="mt-2 text-muted">暂无告警记录</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
