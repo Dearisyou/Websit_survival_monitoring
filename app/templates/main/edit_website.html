@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">编辑网站 - {{ website.name }}</h1>
+    <a href="{{ url_for('main.websites') }}" class="btn btn-secondary">返回</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control") }}
+            </div>
+            <div class="mb-3">
+                {{ form.url.label(class="form-label") }}
+                {{ form.url(class="form-control") }}
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{ form.check_interval.label(class="form-label") }}
+                        {{ form.check_interval(class="form-control") }}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{ form.timeout.label(class="form-label") }}
+                        {{ form.timeout(class="form-control") }}
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">保存更改</button>
+            <a href="{{ url_for('main.websites') }}" class="btn btn-secondary">取消</a>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">当前状态</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>状态:</strong> 
+                    {% if website.status == 'up' %}
+                        <span class="badge bg-success">正常</span>
+                    {% elif website.status == 'down' %}
+                        <span class="badge bg-danger">故障</span>
+                    {% else %}
+                        <span class="badge bg-secondary">未知</span>
+                    {% endif %}
+                </p>
+                <p><strong>最后检查:</strong> 
+                    {% if website.last_check %}
+                        {{ website.last_check.strftime('%Y-%m-%d %H:%M') }}
+                    {% else %}
+                        从未检查
+                    {% endif %}
+                </p>
+                <p><strong>响应时间:</strong> 
+                    {% if website.response_time %}
+                        {{ "%.2f"|format(website.response_time) }}s
+                    {% else %}
+                        -
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

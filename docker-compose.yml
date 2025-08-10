@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  website-monitor:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./monitor.db:/app/monitor.db
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=your-secret-key-change-this
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">添加网站</h1>
+    <a href="{{ url_for('main.websites') }}" class="btn btn-secondary">返回</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control") }}
+                <div class="form-text">为您的网站起一个易识别的名称</div>
+            </div>
+            <div class="mb-3">
+                {{ form.url.label(class="form-label") }}
+                {{ form.url(class="form-control", placeholder="https://example.com") }}
+                <div class="form-text">完整的网站URL地址</div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{ form.check_interval.label(class="form-label") }}
+                        {{ form.check_interval(class="form-control") }}
+                        <div class="form-text">监控检查的时间间隔</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        {{ form.timeout.label(class="form-label") }}
+                        {{ form.timeout(class="form-control") }}
+                        <div class="form-text">请求超时时间</div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">添加网站</button>
+            <a href="{{ url_for('main.websites') }}" class="btn btn-secondary">取消</a>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">配置说明</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-info-circle text-info me-2"></i>检查间隔建议设置为5-10分钟</li>
+                    <li><i class="bi bi-info-circle text-info me-2"></i>超时时间建议设置为10-30秒</li>
+                    <li><i class="bi bi-info-circle text-info me-2"></i>URL必须包含协议(http/https)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">全局告警配置</h1>
+    <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">返回</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.global_dingtalk_webhook.label(class="form-label") }}
+                        {{ form.global_dingtalk_webhook(class="form-control") }}
+                        <div class="form-text">全局钉钉机器人Webhook地址，所有网站都将使用此地址发送告警</div>
+                    </div>
+                    <div class="mb-3">
+                        {{ form.global_dingtalk_secret.label(class="form-label") }}
+                        {{ form.global_dingtalk_secret(class="form-control") }}
+                        <div class="form-text">钉钉机器人密钥，如果使用签名验证则必填</div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        {{ form.global_alert_enabled(class="form-check-input") }}
+                        {{ form.global_alert_enabled.label(class="form-check-label") }}
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">保存配置</button>
+                        <button type="button" class="btn btn-success" id="testAlert">测试告警</button>
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">取消</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">配置说明</h6>
+            </div>
+            <div class="card-body">
+                <p class="small mb-2"><strong>方式一：关键词验证</strong></p>
+                <ol class="small mb-3">
+                    <li>在钉钉群中添加自定义机器人</li>
+                    <li>选择"自定义关键词"安全设置</li>
+                    <li>添加关键词"网站监控告警"</li>
+                    <li>复制Webhook地址</li>
+                </ol>
+                <p class="small mb-2"><strong>方式二：签名验证</strong></p>
+                <ol class="small mb-3">
+                    <li>选择"加签"安全设置</li>
+                    <li>复制Webhook地址和密钥</li>
+                    <li>在上方输入框中填入</li>
+                </ol>
+                <div class="alert alert-info small mt-3">
+                    <i class="bi bi-info-circle me-1"></i>
+                    配置后所有网站故障和恢复都会发送到此群
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('testAlert').addEventListener('click', function() {
+    const btn = this;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>发送中...';
+    
+    fetch('/settings/test-alert', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ ' + data.message);
+        } else {
+            alert('❌ ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('❌ 测试失败: ' + error.message);
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '测试告警';
+    });
+});
+</script>
+{% endblock %}

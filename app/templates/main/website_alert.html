@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">告警配置 - {{ website.name }}</h1>
+    <a href="{{ url_for('main.websites') }}" class="btn btn-secondary">返回</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-4">
+                <div class="form-check form-switch">
+                    {{ form.alert_enabled(class="form-check-input", role="switch") }}
+                    {{ form.alert_enabled.label(class="form-check-label") }}
+                </div>
+                <div class="form-text mt-2">开启后，网站故障和恢复时会发送全局告警通知</div>
+            </div>
+            <button type="submit" class="btn btn-primary">保存配置</button>
+            <a href="{{ url_for('main.websites') }}" class="btn btn-secondary">取消</a>
+        </form>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">告警通知说明</h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info small">
+                    <i class="bi bi-info-circle me-1"></i>
+                    告警通知使用全局配置，请在“全局设置”中配置钉钉机器人
+                </div>
+                <p class="small mb-2"><strong>功能说明:</strong></p>
+                <ul class="small">
+                    <li>开启后，网站故障时会发送告警</li>
+                    <li>网站恢复时会发送恢复通知</li>
+                    <li>关闭后，此网站不会发送任何通知</li>
+                </ul>
+                <div class="alert alert-warning small mt-3">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    请先在“全局设置”中配置钉钉机器人后再使用
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

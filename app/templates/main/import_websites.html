@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">批量导入网站</h1>
+    <a href="{{ url_for('main.websites') }}" class="btn btn-secondary">返回</a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ form.excel_file.label(class="form-label") }}
+                        {{ form.excel_file(class="form-control") }}
+                        <div class="form-text">支持 .xlsx 和 .xls 格式文件</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.check_interval.label(class="form-label") }}
+                                {{ form.check_interval(class="form-control") }}
+                                <div class="form-text">未指定时使用的默认检查间隔</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.timeout.label(class="form-label") }}
+                                {{ form.timeout(class="form-control") }}
+                                <div class="form-text">未指定时使用的默认超时时间</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload me-2"></i>开始导入
+                    </button>
+                    <a href="{{ url_for('main.websites') }}" class="btn btn-secondary">取消</a>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Excel格式说明</h6>
+            </div>
+            <div class="card-body">
+                <p class="small mb-2"><strong>必需列：</strong></p>
+                <ul class="small mb-3">
+                    <li>网站名称</li>
+                    <li>URL</li>
+                </ul>
+                <p class="small mb-2"><strong>可选列：</strong></p>
+                <ul class="small mb-3">
+                    <li>检查间隔（秒）</li>
+                    <li>超时时间（秒）</li>
+                </ul>
+                <div class="alert alert-warning small">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    重复的URL将被跳过
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-download me-2"></i>下载模板</h6>
+            </div>
+            <div class="card-body">
+                <p class="small mb-2">下载Excel模板文件以确保格式正确：</p>
+                <a href="{{ url_for('main.download_template') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-file-earmark-excel me-1"></i>下载模板
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

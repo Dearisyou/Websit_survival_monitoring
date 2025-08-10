@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">监控日志 - {{ website.name }}</h1>
+    <a href="{{ url_for('main.websites') }}" class="btn btn-secondary">返回</a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h6 class="mb-0">最近100条监控记录</h6>
+    </div>
+    <div class="card-body">
+        {% if logs %}
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>检查时间</th>
+                        <th>状态</th>
+                        <th>响应时间</th>
+                        <th>错误信息</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>{{ log.check_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>
+                            {% if log.status == 'up' %}
+                                <span class="badge bg-success">正常</span>
+                            {% else %}
+                                <span class="badge bg-danger">故障</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if log.response_time %}
+                                {{ "%.2f"|format(log.response_time) }}s
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if log.error_message %}
+                                <span class="text-danger">{{ log.error_message }}</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="bi bi-journal-x" style="font-size: 3rem; color: #6c757d;"></i>
+            <p class="mt-2 text-muted">暂无监控日志</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

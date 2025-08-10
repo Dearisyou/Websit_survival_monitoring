@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">仪表盘</h1>
+    <div class="text-muted small">
+        <i class="bi bi-arrow-clockwise me-1"></i>
+        最后更新: <span id="lastUpdate">刚刚</span>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="bi bi-globe"></i>
+            <h5>总站点</h5>
+            <h2 class="mb-0">{{ stats.total }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <i class="bi bi-check-circle"></i>
+            <h5>正常</h5>
+            <h2 class="mb-0">{{ stats.up }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <i class="bi bi-x-circle"></i>
+            <h5>故障</h5>
+            <h2 class="mb-0">{{ stats.down }}</h2>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stats-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
+            <i class="bi bi-graph-up"></i>
+            <h5>可用率</h5>
+            <h2 class="mb-0">{{ stats.uptime }}%</h2>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">网站状态</h5>
+    </div>
+    <div class="card-body">
+        {% if websites %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>网站名称</th>
+                        <th>URL</th>
+                        <th>状态</th>
+                        <th>响应时间</th>
+                        <th>最后检查</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for website in websites %}
+                    <tr>
+                        <td>{{ website.name }}</td>
+                        <td><a href="{{ website.url }}" target="_blank">{{ website.url }}</a></td>
+                        <td>
+                            {% if website.status == 'up' %}
+                                <span class="badge bg-success">正常</span>
+                            {% elif website.status == 'down' %}
+                                <span class="badge bg-danger">故障</span>
+                            {% else %}
+                                <span class="badge bg-secondary">未知</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if website.response_time %}
+                                {{ "%.2f"|format(website.response_time) }}s
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if website.last_check %}
+                                {{ website.last_check.strftime('%m-%d %H:%M') }}
+                            {% else %}
+                                从未检查
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="bi bi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+            <p class="mt-2 text-muted">暂无监控网站</p>
+            <a href="{{ url_for('main.create_website') }}" class="btn btn-primary">添加第一个网站</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function updateDashboard() {
+    // 更新统计数据
+    fetch('/api/dashboard/stats')
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('.stats-card h2').textContent = data.total;
+            document.querySelectorAll('.stats-card h2')[1].textContent = data.up;
+            document.querySelectorAll('.stats-card h2')[2].textContent = data.down;
+            document.querySelectorAll('.stats-card h2')[3].textContent = data.uptime + '%';
+            
+            // 更新最后更新时间
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+        });
+    
+    // 更新网站列表
+    fetch('/api/websites')
+        .then(response => response.json())
+        .then(websites => {
+            const tbody = document.querySelector('table tbody');
+            if (tbody && websites.length > 0) {
+                tbody.innerHTML = '';
+                websites.forEach(website => {
+                    const statusBadge = website.status === 'up' ? 
+                        '<span class="badge bg-success">正常</span>' : 
+                        website.status === 'down' ? 
+                        '<span class="badge bg-danger">故障</span>' : 
+                        '<span class="badge bg-secondary">未知</span>';
+                    
+                    const responseTime = website.response_time ? 
+                        parseFloat(website.response_time).toFixed(2) + 's' : '-';
+                    
+                    const row = `
+                        <tr>
+                            <td>${website.name}</td>
+                            <td><a href="${website.url}" target="_blank">${website.url}</a></td>
+                            <td>${statusBadge}</td>
+                            <td>${responseTime}</td>
+                            <td>${website.last_check}</td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            }
+        });
+}
+
+// 页面加载完成后开始定时刷新
+document.addEventListener('DOMContentLoaded', function() {
+    // 每30秒刷新一次
+    setInterval(updateDashboard, 30000);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+@echo off
+echo 正在启动网站监控系统...
+echo.
+echo 安装依赖包...
+pip install -r requirements.txt
+echo.
+echo 启动应用...
+python run.py
+pause
