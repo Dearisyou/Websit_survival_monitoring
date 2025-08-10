@@ -93,6 +93,9 @@ def create_app():
                 f.write('首次登录后请立即修改密码！\n')
             print('默认管理员密码已保存到 admin_password.txt 文件')
     
+    # 生产环境初始化
+    init_production_environment(app)
+    
     # 启动监控调度器
     if not scheduler.running:
         scheduler.start()
@@ -101,3 +104,19 @@ def create_app():
     scheduler.app = app
     
     return app
+
+def init_production_environment(app):
+    """生产环境初始化"""
+    with app.app_context():
+        # 重新添加所有监控任务
+        from app.models import Website
+        from app.monitor import add_monitor_job
+        
+        websites = Website.query.all()
+        for website in websites:
+            try:
+                add_monitor_job(website.id)
+            except Exception as e:
+                print(f'添加监控任务失败: {website.name} - {e}')
+        
+        print(f'生产环境初始化完成，恢复 {len(websites)} 个监控任务')

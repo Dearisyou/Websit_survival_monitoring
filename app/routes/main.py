@@ -209,11 +209,14 @@ def check_now(website_id):
         flash('权限不足')
         return redirect(url_for('main.websites'))
     
+    # 预先获取名称防止会话分离
+    website_name = website.name
+    
     # 立即执行检测
     from app.monitor import check_website
     check_website(website_id)
     
-    flash(f'已对 {website.name} 执行立即检测')
+    flash(f'已对 {website_name} 执行立即检测')
     return redirect(url_for('main.websites'))
 
 @bp.route('/websites/import', methods=['GET', 'POST'])

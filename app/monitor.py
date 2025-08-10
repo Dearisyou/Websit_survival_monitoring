@@ -7,6 +7,7 @@ from app.models import Website, MonitorLog, AlertConfig
 def check_website(website_id):
     """检查单个网站状态"""
     with scheduler.app.app_context():
+        # 重新查询防止会话分离
         website = Website.query.get(website_id)
         if not website:
             return
@@ -62,13 +63,18 @@ def check_website(website_id):
         # 发送告警：故障或恢复
         if old_status != status and old_status is not None:
             if status == 'down':
-                send_alert(website, 'down', error_message)
+                send_alert(website_id, 'down', error_message)
             elif status == 'up' and old_status == 'down':
-                send_alert(website, 'up', None)
+                send_alert(website_id, 'up', None)
 
-def send_alert(website, status, error_message):
+def send_alert(website_id, status, error_message):
     """发送钉钉告警"""
-    from app.models import AlertLog, GlobalConfig
+    from app.models import AlertLog, GlobalConfig, Website
+    
+    # 重新查询网站对象防止会话分离
+    website = Website.query.get(website_id)
+    if not website:
+        return
     
     # 检查全局配置
     global_webhook = GlobalConfig.query.filter_by(key='global_dingtalk_webhook').first()
