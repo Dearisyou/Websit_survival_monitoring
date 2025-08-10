@@ -17,15 +17,21 @@ def login():
     admin_password_exists = os.path.exists('admin_password.txt')
     
     form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user and user.check_password(form.password.data):
-            login_user(user)
-            audit_log('LOGIN_SUCCESS', f'User: {user.username}')
-            next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
-        audit_log('LOGIN_FAILED', f'Username: {form.username.data}')
-        flash('用户名或密码错误')
+    if request.method == 'POST':
+        if not form.validate_on_submit():
+            # 表单验证失败，显示错误
+            for field, errors in form.errors.items():
+                for error in errors:
+                    flash(f'{field}: {error}', 'error')
+        else:
+            user = User.query.filter_by(username=form.username.data).first()
+            if user and user.check_password(form.password.data):
+                login_user(user)
+                audit_log('LOGIN_SUCCESS', f'User: {user.username}')
+                next_page = request.args.get('next')
+                return redirect(next_page) if next_page else redirect(url_for('main.dashboard'))
+            audit_log('LOGIN_FAILED', f'Username: {form.username.data}')
+            flash('用户名或密码错误')
     
     return render_template('auth/login.html', form=form, admin_password_exists=admin_password_exists)
 
